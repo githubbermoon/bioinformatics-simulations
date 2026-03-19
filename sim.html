@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>C1-FFL Persistence Detector Simulation</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 20px; background: #f4f4f9; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
+        .control-group { display: flex; flex-direction: column; }
+        label { font-size: 0.85em; font-weight: 600; margin-bottom: 8px; color: #495057; text-transform: uppercase; letter-spacing: 0.5px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        .value-display { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; color: #007bff; font-size: 0.9em; font-weight: bold; margin-top: 4px; }
+        h1 { margin-top: 0; color: #212529; font-size: 1.8em; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-bottom: 15px; }
+        p { font-size: 1em; color: #6c757d; line-height: 1.6; margin-bottom: 25px; }
+        .footer { margin-top: 30px; font-size: 0.8em; color: #adb5bd; text-align: center; border-top: 1px solid #eee; padding-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>C1-FFL Persistence Detector</h1>
+        <p>
+            An interactive dashboard to explore the Type-1 Coherent Feed-Forward Loop. 
+            <strong>Input X</strong> activates <strong>Regulator Y</strong> and <strong>Target Z</strong>, 
+            but Z only turns ON when both X and Y are present (AND-logic).
+        </p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Input Duration (Persistence)</label>
+                <input type="range" id="duration" min="1" max="60" value="15" step="1">
+                <div class="value-display" id="duration-val">15s</div>
+            </div>
+            <div class="control-group">
+                <label>Hill Coefficient (n) - Sensitivity</label>
+                <input type="range" id="hill-n" min="1" max="10" value="3" step="0.5">
+                <div class="value-display" id="hill-n-val">3.0</div>
+            </div>
+            <div class="control-group">
+                <label>Activation Threshold (K)</label>
+                <input type="range" id="threshold-k" min="0.1" max="1.5" value="0.5" step="0.05">
+                <div class="value-display" id="threshold-k-val">0.50</div>
+            </div>
+             <div class="control-group">
+                <label>Degradation Rate (Beta-Y)</label>
+                <input type="range" id="beta-y" min="0.05" max="1.0" value="0.15" step="0.01">
+                <div class="value-display" id="beta-y-val">0.15</div>
+            </div>
+        </div>
+
+        <div id="plot"></div>
+
+        <div class="footer">
+            Built for ScienceClaw 2026 Submission • Authors: Pranjal & Claw 🦞
+        </div>
+    </div>
+
+    <script>
+        function hill(S, K, n) {
+            if (S <= 0) return 0;
+            const sn = Math.pow(S, n);
+            const kn = Math.pow(K, n);
+            return sn / (kn + sn);
+        }
+
+        function simulate() {
+            const dur = parseFloat(document.getElementById('duration').value);
+            const n = parseFloat(document.getElementById('hill-n').value);
+            const K = parseFloat(document.getElementById('threshold-k').value);
+            const betaY = parseFloat(document.getElementById('beta-y').value);
+            
+            document.getElementById('duration-val').innerText = dur + 's';
+            document.getElementById('hill-n-val').innerText = n.toFixed(1);
+            document.getElementById('threshold-k-val').innerText = K.toFixed(2);
+            document.getElementById('beta-y-val').innerText = betaY.toFixed(2);
+
+            const dt = 0.2;
+            const tMax = 120;
+            const time = [];
+            const inputX = [];
+            const concY = [];
+            const concZ = [];
+
+            let y = 0;
+            let z = 0;
+            const alphaY = 1.0;
+            const alphaZ = 1.0;
+            const betaZ = 0.2; // Faster Z degradation for clearer signal
+
+            for (let t = 0; t <= tMax; t += dt) {
+                // Pulse starts at t=10
+                const x = (t >= 10 && t <= 10 + dur) ? 1.0 : 0.0;
+                
+                // ODEs (Simple Euler Integration)
+                const hx = hill(x, K, n);
+                const hy = hill(y, K, n);
+
+                const dy = (alphaY * hx - betaY * y) * dt;
+                y += dy;
+
+                const dz = (alphaZ * hx * hy - betaZ * z) * dt;
+                z += dz;
+
+                time.push(t.toFixed(1));
+                inputX.push(x);
+                concY.push(y);
+                concZ.push(z);
+            }
+
+            const traceX = { 
+                x: time, y: inputX, name: 'Input (X)', 
+                line: { dash: 'dot', color: '#adb5bd' }, 
+                fill: 'tozeroy', fillcolor: 'rgba(233, 236, 239, 0.5)' 
+            };
+            const traceY = { 
+                x: time, y: concY, name: 'Regulator (Y)', 
+                line: { color: '#007bff', width: 2 } 
+            };
+            const traceZ = { 
+                x: time, y: concZ, name: 'Target (Z)', 
+                line: { width: 4, color: '#dc3545' } 
+            };
+
+            const layout = {
+                font: { family: 'inherit' },
+                hovermode: 'x unified',
+                xaxis: { title: 'Time (arbitrary units)', gridcolor: '#f0f0f0' },
+                yaxis: { title: 'Relative Concentration', range: [0, 1.3], gridcolor: '#f0f0f0' },
+                margin: { t: 30, b: 50, l: 60, r: 30 },
+                legend: { orientation: 'h', y: -0.2 },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white'
+            };
+
+            const config = { responsive: true, displayModeBar: false };
+
+            Plotly.newPlot('plot', [traceX, traceY, traceZ], layout, config);
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', simulate);
+        });
+
+        simulate();
+    </script>
+</body>
+</html>

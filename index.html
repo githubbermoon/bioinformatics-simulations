@@ -1,147 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>C1-FFL Persistence Detector Simulation</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <meta charset="UTF-8">
+    <title>C1-FFL Persistence Detector Paper</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 20px; background: #f4f4f9; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
-        .control-group { display: flex; flex-direction: column; }
-        label { font-size: 0.85em; font-weight: 600; margin-bottom: 8px; color: #495057; text-transform: uppercase; letter-spacing: 0.5px; }
-        input[type=range] { width: 100%; cursor: pointer; }
-        .value-display { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; color: #007bff; font-size: 0.9em; font-weight: bold; margin-top: 4px; }
-        h1 { margin-top: 0; color: #212529; font-size: 1.8em; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-bottom: 15px; }
-        p { font-size: 1em; color: #6c757d; line-height: 1.6; margin-bottom: 25px; }
-        .footer { margin-top: 30px; font-size: 0.8em; color: #adb5bd; text-align: center; border-top: 1px solid #eee; padding-top: 15px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 850px; margin: 40px auto; padding: 0 20px; background-color: #fdfdfd; }
+        h1 { border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #222; margin-bottom: 5px; }
+        .authors { font-size: 1.1em; font-weight: 500; color: #555; margin-bottom: 20px; }
+        .abstract { background: #f8f9fa; padding: 20px; border-left: 5px solid #007bff; margin: 30px 0; font-style: italic; }
+        h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 40px; }
+        .math-block { background: #fff; padding: 15px; overflow-x: auto; margin: 20px 0; border: 1px solid #f0f0f0; border-radius: 4px; }
+        .nav-links { display: flex; gap: 20px; margin-bottom: 40px; font-weight: 600; background: #eee; padding: 10px 20px; border-radius: 8px; }
+        .nav-links a { color: #007bff; text-decoration: none; }
+        .nav-links a:hover { text-decoration: underline; }
+        li { margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>C1-FFL Persistence Detector</h1>
-        <p>
-            An interactive dashboard to explore the Type-1 Coherent Feed-Forward Loop. 
-            <strong>Input X</strong> activates <strong>Regulator Y</strong> and <strong>Target Z</strong>, 
-            but Z only turns ON when both X and Y are present (AND-logic).
-        </p>
-        
-        <div class="controls">
-            <div class="control-group">
-                <label>Input Duration (Persistence)</label>
-                <input type="range" id="duration" min="1" max="60" value="15" step="1">
-                <div class="value-display" id="duration-val">15s</div>
-            </div>
-            <div class="control-group">
-                <label>Hill Coefficient (n) - Sensitivity</label>
-                <input type="range" id="hill-n" min="1" max="10" value="3" step="0.5">
-                <div class="value-display" id="hill-n-val">3.0</div>
-            </div>
-            <div class="control-group">
-                <label>Activation Threshold (K)</label>
-                <input type="range" id="threshold-k" min="0.1" max="1.5" value="0.5" step="0.05">
-                <div class="value-display" id="threshold-k-val">0.50</div>
-            </div>
-             <div class="control-group">
-                <label>Degradation Rate (Beta-Y)</label>
-                <input type="range" id="beta-y" min="0.05" max="1.0" value="0.15" step="0.01">
-                <div class="value-display" id="beta-y-val">0.15</div>
-            </div>
-        </div>
-
-        <div id="plot"></div>
-
-        <div class="footer">
-            Built for ScienceClaw 2026 Submission • Authors: Pranjal & Claw 🦞
-        </div>
+    <div class="nav-links">
+        <a href="index.html">The Paper</a>
+        <a href="sim.html">Interactive Simulation</a>
+        <a href="https://github.com/githubbermoon/bioinformatics-simulations">GitHub Repo</a>
     </div>
 
-    <script>
-        function hill(S, K, n) {
-            if (S <= 0) return 0;
-            const sn = Math.pow(S, n);
-            const kn = Math.pow(K, n);
-            return sn / (kn + sn);
-        }
+    <h1>Dynamic Modeling of a Type-1 Coherent Feed-Forward Loop as a Persistence Detector</h1>
+    <div class="authors">Pranjal and Claw 🦞 &bull; March 2026</div>
 
-        function simulate() {
-            const dur = parseFloat(document.getElementById('duration').value);
-            const n = parseFloat(document.getElementById('hill-n').value);
-            const K = parseFloat(document.getElementById('threshold-k').value);
-            const betaY = parseFloat(document.getElementById('beta-y').value);
-            
-            document.getElementById('duration-val').innerText = dur + 's';
-            document.getElementById('hill-n-val').innerText = n.toFixed(1);
-            document.getElementById('threshold-k-val').innerText = K.toFixed(2);
-            document.getElementById('beta-y-val').innerText = betaY.toFixed(2);
+    <div class="abstract">
+        <strong>Abstract:</strong> Network motifs in transcriptional regulation provide compact primitives for cellular decision-making. We analyze a Type-1 coherent feed-forward loop (C1-FFL) acting as a persistence detector: rejecting short input pulses while triggering robust output for sustained signals. We derive explicit noise-filtering thresholds for signal amplitude and duration, and map these to the <em>araBAD</em> sugar-utilization program in <em>E. coli</em>. Finally, we discuss synthetic biology applications and provide an interactive simulation for real-time parameter exploration.
+    </div>
 
-            const dt = 0.2;
-            const tMax = 120;
-            const time = [];
-            const inputX = [];
-            const concY = [];
-            const concZ = [];
+    <h2>1. Introduction and Motif Logic</h2>
+    <p>Gene regulatory networks are not random wiring diagrams; they are enriched for recurring motifs that perform specific dynamic functions. The Type-1 coherent feed-forward loop (C1-FFL) is among the most frequent (Alon, 2007).</p>
+    <p>In this architecture:</p>
+    <ul>
+        <li>Input \(X\) activates an intermediate \(Y\) and the target \(Z\).</li>
+        <li>\(Y\) also activates \(Z\).</li>
+        <li>\(Z\) integrates these signals via an <strong>AND-gate</strong>.</li>
+    </ul>
+    <p>Activation requires both immediate presence (through \(X\)) and sustained persistence (to allow \(Y\) accumulation). This architecture naturally filters transient noise, preventing energetically costly gene expression during brief environmental fluctuations.</p>
 
-            let y = 0;
-            let z = 0;
-            const alphaY = 1.0;
-            const alphaZ = 1.0;
-            const betaZ = 0.2; // Faster Z degradation for clearer signal
+    <h2>2. Mathematical Model and Sensitivity</h2>
+    <p>We model the system using deterministic ODEs with Hill-type activation:</p>
+    <div class="math-block">
+        \[ \frac{dY}{dt} = \alpha_Y H(X; K_{XY}, n_{XY}) - \beta_Y Y \]
+        \[ \frac{dZ}{dt} = \alpha_Z H(X; K_{XZ}, n_{XZ}) H(Y; K_{YZ}, n_{YZ}) - \beta_Z Z \]
+    </div>
+    <p>Where \( H(S; K, n) = \frac{S^n}{K^n + S^n} \).</p>
+    <p>From this, we derive the critical persistence threshold \( T_{\text{min}} \) needed for \( Z \) activation:</p>
+    <div class="math-block">
+        \[ T_{\text{min}} \approx \frac{1}{\beta_Y} \ln \left( \frac{Y_{\infty}(X_0)}{Y_{\infty}(X_0) - Y_{\text{req}}} \right) \]
+    </div>
+    <p>Higher Hill coefficients (\( n \)) sharpen the filtering boundary, while activation thresholds (\( K \)) and degradation rates (\( \beta \)) tune the duration of the required signal.</p>
 
-            for (let t = 0; t <= tMax; t += dt) {
-                // Pulse starts at t=10
-                const x = (t >= 10 && t <= 10 + dur) ? 1.0 : 0.0;
-                
-                // ODEs (Simple Euler Integration)
-                const hx = hill(x, K, n);
-                const hy = hill(y, K, n);
+    <h2>3. Biological Context and Applications</h2>
+    <p>The <em>araBAD</em> operon in <em>E. coli</em> utilizes this logic to avoid producing catabolic enzymes during sub-minute arabinose blips, which would waste ATP and ribosomal capacity (Mangan et al., 2003). By delaying commitment, the cell ensures nutrients are reliably present.</p>
+    <p>In synthetic biology, this motif serves as a modular building block for:</p>
+    <ul>
+        <li><strong>Robust Biosensors:</strong> Reducing false alarms from environmental noise.</li>
+        <li><strong>Metabolic Control:</strong> Limiting production-pathway activation to stable feedstocks.</li>
+        <li><strong>Therapeutic Logic:</strong> Requiring prolonged disease-marker exposure before payload release.</li>
+    </ul>
 
-                const dy = (alphaY * hx - betaY * y) * dt;
-                y += dy;
+    <h2>4. Interactive Simulation</h2>
+    <p>To explore these dynamics, we provide a real-time interactive dashboard. Users can modulate persistence and sensitivity to observe threshold shifts.</p>
+    <p><strong>Simulation URL:</strong> <a href="sim.html">Interactive Dashboard</a></p>
 
-                const dz = (alphaZ * hx * hy - betaZ * z) * dt;
-                z += dz;
-
-                time.push(t.toFixed(1));
-                inputX.push(x);
-                concY.push(y);
-                concZ.push(z);
-            }
-
-            const traceX = { 
-                x: time, y: inputX, name: 'Input (X)', 
-                line: { dash: 'dot', color: '#adb5bd' }, 
-                fill: 'tozeroy', fillcolor: 'rgba(233, 236, 239, 0.5)' 
-            };
-            const traceY = { 
-                x: time, y: concY, name: 'Regulator (Y)', 
-                line: { color: '#007bff', width: 2 } 
-            };
-            const traceZ = { 
-                x: time, y: concZ, name: 'Target (Z)', 
-                line: { width: 4, color: '#dc3545' } 
-            };
-
-            const layout = {
-                font: { family: 'inherit' },
-                hovermode: 'x unified',
-                xaxis: { title: 'Time (arbitrary units)', gridcolor: '#f0f0f0' },
-                yaxis: { title: 'Relative Concentration', range: [0, 1.3], gridcolor: '#f0f0f0' },
-                margin: { t: 30, b: 50, l: 60, r: 30 },
-                legend: { orientation: 'h', y: -0.2 },
-                plot_bgcolor: 'white',
-                paper_bgcolor: 'white'
-            };
-
-            const config = { responsive: true, displayModeBar: false };
-
-            Plotly.newPlot('plot', [traceX, traceY, traceZ], layout, config);
-        }
-
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', simulate);
-        });
-
-        simulate();
-    </script>
+    <h2 id="references">References</h2>
+    <ol>
+        <li>Alon, U. (2007). <em>An Introduction to Systems Biology</em>. CRC Press.</li>
+        <li>Mangan, S., & Alon, U. (2003). Structure and function of the feed-forward loop network motif. <em>PNAS</em>, 100(21), 11980-11985.</li>
+    </ol>
 </body>
 </html>
