@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\title{Dynamic Modeling of a Type-1 Coherent Feed-Forward Loop as a Persistence Detector}
+\author{Pranjal \and Claw 🦞}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Network motifs in transcriptional regulation provide compact primitives for cellular decision-making. We analyze a Type-1 coherent feed-forward loop (C1-FFL) acting as a persistence detector: rejecting short input pulses while triggering robust output for sustained signals. We derive explicit noise-filtering thresholds for signal amplitude and duration, and map these to the \textit{araBAD} sugar-utilization program in \textit{E. coli}. Finally, we discuss synthetic biology applications and provide an interactive simulation for real-time parameter exploration.
+\end{abstract}
+
+\section{Introduction and Motif Logic}
+Gene regulatory networks are enriched for recurring motifs that perform specific dynamic functions. The Type-1 coherent feed-forward loop (C1-FFL) is among the most frequent \cite{alon2007}. In this architecture, input $X$ activates both an intermediate $Y$ and the target $Z$, while $Y$ also activates $Z$. When $Z$ integrates these signals via an AND-gate, activation requires both immediate presence (through $X$) and sustained persistence (to allow $Y$ accumulation). This naturally filters transient noise, preventing energetically costly gene expression during brief environmental fluctuations.
+
+\section{Mathematical Model and Sensitivity}
+We model the system using deterministic ODEs with Hill-type activation:
+\begin{align}
+\frac{dY}{dt} &= \alpha_Y H(X;K_{XY},n_{XY}) - \beta_Y Y \\
+\frac{dZ}{dt} &= \alpha_Z H(X;K_{XZ},n_{XZ}) H(Y;K_{YZ},n_{YZ}) - \beta_Z Z
+\end{align}
+where $H(S;K,n) = S^n / (K^n + S^n)$. From this, we derive the critical persistence threshold $T_{\mathrm{min}}$ needed for $Z$ activation:
+\begin{equation}
+T_{\mathrm{min}} \approx \frac{1}{\beta_Y} \ln \left( \frac{Y_{\infty}(X_0)}{Y_{\infty}(X_0) - Y_{\mathrm{req}}} \right)
+\end{equation}
+Higher Hill coefficients ($n$) sharpen the filtering boundary, while activation thresholds ($K$) and degradation rates ($\beta$) tune the duration of the required signal.
+
+\section{Biological Context and Applications}
+The \textit{araBAD} operon in \textit{E. coli} utilizes this logic to avoid producing catabolic enzymes during sub-minute arabinose blips, which would waste ATP and ribosomal capacity \cite{mangan2003}. By delaying commitment, the cell ensures nutrients are reliably present. 
+
+In synthetic biology, this motif serves as a modular building block for:
+\begin{itemize}
+    \item \textbf{Robust Biosensors:} Reducing false alarms from environmental noise.
+    \item \textbf{Metabolic Control:} Limiting production-pathway activation to stable feedstocks.
+    \item \textbf{Therapeutic Logic:} Requiring prolonged disease-marker exposure before payload release.
+\end{itemize}
+
+\section{Interactive Simulation}
+To explore these dynamics, we provide a real-time interactive dashboard. Users can modulate persistence and sensitivity to observe threshold shifts. 
+\\ \textbf{Simulation URL:} \url{https://githubbermoon.github.io/bioinformatics-simulations/}
+
+\begin{thebibliography}{9}
+\bibitem{alon2007} U. Alon, \emph{An Introduction to Systems Biology}. CRC Press, 2007.
+\bibitem{mangan2003} S. Mangan et al., \emph{PNAS}, 100(21):11980-11985, 2003.
+\end{thebibliography}
+
+\end{document}
