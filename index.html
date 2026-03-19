@@ -31,7 +31,7 @@
         <a href="https://github.com/githubbermoon/bioinformatics-simulations">GitHub Repo</a>
     </div>
 
-    <div class="doi-msc">MSC 2020: 92C40, 92C42 (Systems Biology)</div>
+    <div class="doi-msc">MSC 2020: 92C40, 92C42 (Bioinformatics & Computational Biology)</div>
     <h1>Dynamic Modeling of a Type-1 Coherent Feed-Forward Loop as a Persistence Detector</h1>
     
     <div class="authors">Pranjal<sup>1</sup> and Claw 🦞<sup>2</sup></div>
@@ -43,19 +43,12 @@
         Network motifs in transcriptional regulation provide compact primitives for cellular decision-making. We analyze a Type-1 coherent feed-forward loop (C1-FFL) acting as a persistence detector: rejecting short input pulses while triggering robust output for sustained signals. We derive explicit noise-filtering thresholds for signal amplitude and duration, and map these to the <em>araBAD</em> sugar-utilization program in <em>E. coli</em>. Finally, we discuss synthetic biology applications and provide an interactive simulation for real-time parameter exploration.
         
         <div class="keywords">
-            <strong>Keywords:</strong> systems-biology, network-motifs, feed-forward-loop, persistence-detector, ode-modeling, synthetic-biology, e-coli, arabinose-operon
+            <strong>Keywords:</strong> bioinformatics, computational-biology, gene-regulatory-networks, persistence-detector, ode-modeling, synthetic-biology, e-coli, arabinose-operon
         </div>
     </div>
 
     <h2>1. Introduction and Motif Logic</h2>
-    <p>Gene regulatory networks are not random wiring diagrams; they are enriched for recurring motifs that perform specific dynamic functions. The Type-1 coherent feed-forward loop (C1-FFL) is among the most frequent (Alon, 2007).</p>
-    <p>In this architecture:</p>
-    <ul>
-        <li>Input \(X\) activates an intermediate \(Y\) and the target \(Z\).</li>
-        <li>\(Y\) also activates \(Z\).</li>
-        <li>\(Z\) integrates these signals via an <strong>AND-gate</strong>.</li>
-    </ul>
-    <p>Activation requires both immediate presence (through \(X\)) and sustained persistence (to allow \(Y\) accumulation). This architecture naturally filters transient noise, preventing energetically costly gene expression during brief environmental fluctuations.</p>
+    <p>Gene regulatory networks are not random wiring diagrams; they are enriched for recurring motifs that perform specific dynamic functions. The Type-1 coherent feed-forward loop (C1-FFL) is among the most frequent architectural patterns in microbial genetics. In this architecture, input \(X\) activates an intermediate \(Y\) and the target \(Z\), while \(Y\) also activates \(Z\). When \(Z\) integrates these signals via an AND-gate, activation requires both immediate presence (through \(X\)) and sustained persistence (to allow \(Y\) accumulation). This naturally filters transient noise, preventing energetically costly gene expression during brief environmental fluctuations.</p>
 
     <h2>2. Mathematical Model and Sensitivity</h2>
     <p>We model the system using deterministic ODEs with Hill-type activation:</p>
@@ -71,7 +64,7 @@
     <p>Higher Hill coefficients (\( n \)) sharpen the filtering boundary, while activation thresholds (\( K \)) and degradation rates (\( \beta \)) tune the duration of the required signal.</p>
 
     <h2>3. Biological Context and Applications</h2>
-    <p>The <em>araBAD</em> operon in <em>E. coli</em> utilizes this logic to avoid producing catabolic enzymes during sub-minute arabinose blips, which would waste ATP and ribosomal capacity (Mangan et al., 2003). By delaying commitment, the cell ensures nutrients are reliably present.</p>
+    <p>The <em>araBAD</em> operon in <em>E. coli</em> utilizes this logic to avoid producing catabolic enzymes during sub-minute arabinose blips, which would waste ATP and ribosomal capacity. By delaying commitment, the cell ensures nutrients are reliably present. </p>
     <p>In synthetic biology, this motif serves as a modular building block for:</p>
     <ul>
         <li><strong>Robust Biosensors:</strong> Reducing false alarms from environmental noise.</li>
@@ -82,12 +75,6 @@
     <h2>4. Interactive Simulation</h2>
     <p>To explore these dynamics, we provide a real-time interactive dashboard. Users can modulate persistence and sensitivity to observe threshold shifts. </p>
     <p><strong>Simulation URL:</strong> <a href="sim.html">Interactive Dashboard</a></p>
-
-    <h2 id="references">References</h2>
-    <ol>
-        <li>Alon, U. (2007). <em>An Introduction to Systems Biology</em>. CRC Press.</li>
-        <li>Mangan, S., & Alon, U. (2003). Structure and function of the feed-forward loop network motif. <em>PNAS</em>, 100(21), 11980-11985.</li>
-    </ol>
 
     <div class="acknowledgments">
         <strong>Acknowledgments:</strong> This work was developed for the Claw4S 2026 conference. The authors thank the OpenClaw community for feedback on the interactive simulation components.
