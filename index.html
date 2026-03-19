@@ -10,8 +10,8 @@
         h1 { border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #222; margin-bottom: 5px; }
         .authors { font-size: 1.1em; font-weight: 500; color: #555; margin-bottom: 5px; }
         .affiliations { font-size: 0.9em; color: #777; margin-bottom: 20px; font-style: italic; }
-        .abstract { background: #f8f9fa; padding: 20px; border-left: 5px solid #007bff; margin: 30px 0; font-style: normal; }
-        .abstract strong { display: block; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9em; letter-spacing: 1px; }
+        .abstract-container { background: #f8f9fa; padding: 20px; border-left: 5px solid #007bff; margin: 30px 0; }
+        .abstract-container strong { display: block; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9em; letter-spacing: 1px; }
         .keywords { margin-top: 15px; font-size: 0.9em; color: #444; border-top: 1px solid #eee; padding-top: 10px; }
         .keywords strong { font-weight: 700; color: #222; }
         h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 40px; }
@@ -21,6 +21,7 @@
         .nav-links a:hover { text-decoration: underline; }
         li { margin-bottom: 10px; }
         .acknowledgments { font-size: 0.9em; color: #666; margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; }
+        .doi-msc { font-family: monospace; font-size: 0.85em; color: #888; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -30,17 +31,19 @@
         <a href="https://github.com/githubbermoon/bioinformatics-simulations">GitHub Repo</a>
     </div>
 
+    <div class="doi-msc">MSC 2020: 92C40, 92C42 (Systems Biology)</div>
     <h1>Dynamic Modeling of a Type-1 Coherent Feed-Forward Loop as a Persistence Detector</h1>
+    
     <div class="authors">Pranjal<sup>1</sup> and Claw 🦞<sup>2</sup></div>
     <div class="affiliations"><sup>1</sup>ML Student & Independent Researcher, <sup>2</sup>OpenClaw AI Agent</div>
     <div class="authors">March 2026</div>
 
-    <div class="abstract">
+    <div class="abstract-container">
         <strong>Abstract</strong>
         Network motifs in transcriptional regulation provide compact primitives for cellular decision-making. We analyze a Type-1 coherent feed-forward loop (C1-FFL) acting as a persistence detector: rejecting short input pulses while triggering robust output for sustained signals. We derive explicit noise-filtering thresholds for signal amplitude and duration, and map these to the <em>araBAD</em> sugar-utilization program in <em>E. coli</em>. Finally, we discuss synthetic biology applications and provide an interactive simulation for real-time parameter exploration.
         
         <div class="keywords">
-            <strong>Keywords:</strong> Systems Biology, Network Motifs, Feed-Forward Loop, Persistence Detector, ODE Modeling, Synthetic Biology, <em>E. coli</em>, Arabinose Operon.
+            <strong>Keywords:</strong> systems-biology, network-motifs, feed-forward-loop, persistence-detector, ode-modeling, synthetic-biology, e-coli, arabinose-operon
         </div>
     </div>
 
@@ -77,7 +80,7 @@
     </ul>
 
     <h2>4. Interactive Simulation</h2>
-    <p>To explore these dynamics, we provide a real-time interactive dashboard. Users can modulate persistence and sensitivity to observe threshold shifts.</p>
+    <p>To explore these dynamics, we provide a real-time interactive dashboard. Users can modulate persistence and sensitivity to observe threshold shifts. </p>
     <p><strong>Simulation URL:</strong> <a href="sim.html">Interactive Dashboard</a></p>
 
     <h2 id="references">References</h2>
