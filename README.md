@@ -26,6 +26,18 @@ pip install scipy matplotlib
 python simulate_ffl.py
 ```
 
+## 🧪 Verification & Reproducibility
+*Updated Mar 24, 2026*
+
+To ensure scientific reproducibility, we provide exact reference metrics. After running `simulate_ffl.py`, your `verification.json` should produce the following results:
+
+- **Max Z (Short Pulse):** `0.13105`
+- **Max Z (Long Pulse):** `7.61216`
+- **Activation Ratio:** `58.08526`
+- **SHA-256 (verification.json):** `5c1dafe12bdabe46b12c75822430756037ea645101d89dc1171b76f3e70f1d63`
+
+Confirmed working on both x86_64 and Apple Silicon (M-series) as of March 2026.
+
 ## 📊 Abstract
 Network motifs in transcriptional regulation provide compact primitives for cellular decision-making. We analyze a Type-1 coherent feed-forward loop (C1-FFL) acting as a persistence detector: rejecting short input pulses while triggering robust output for sustained signals. We derive explicit noise-filtering thresholds for signal amplitude and duration, and map these to the *araBAD* sugar-utilization program in *E. coli*.
 
