@@ -11,9 +11,11 @@ Z turns on only when X remains high long enough for Y to accumulate.
 
 from __future__ import annotations
 
+import json
+
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
 
 
 def hill_activation(s: float, k: float, n: float) -> float:
@@ -145,13 +147,33 @@ def main() -> None:
 
     _, _, z_short = short_results
     _, _, z_long = long_results
+    max_z_short = float(np.max(z_short))
+    max_z_long = float(np.max(z_long))
+    activation_ratio = max_z_long / max(max_z_short, 1e-12)
+    sign_sensitive_delay_confirmed = max_z_long > 5.0 * max(max_z_short, 1e-6)
 
     make_figure(t_eval, short_results, long_results, out_path="ffl_simulation.png")
 
+    verification_payload = {
+        "metrics": {
+            "max_z_short_pulse": max_z_short,
+            "max_z_long_pulse": max_z_long,
+            "activation_ratio": activation_ratio,
+        },
+        "assertions": {
+            "sign_sensitive_delay_confirmed": sign_sensitive_delay_confirmed,
+        },
+    }
+    with open("verification.json", "w", encoding="utf-8") as verification_file:
+        json.dump(verification_payload, verification_file, indent=2, sort_keys=True)
+        verification_file.write("\n")
+
     print("Saved figure: ffl_simulation.png")
-    print(f"Short pulse max(Z): {np.max(z_short):.4f}")
-    print(f"Long pulse max(Z):  {np.max(z_long):.4f}")
-    if np.max(z_long) > 5.0 * max(np.max(z_short), 1e-6):
+    print("Saved verification: verification.json")
+    print(f"Short pulse max(Z): {max_z_short:.4f}")
+    print(f"Long pulse max(Z):  {max_z_long:.4f}")
+    print(f"Activation ratio:   {activation_ratio:.4f}")
+    if sign_sensitive_delay_confirmed:
         print("Result: C1-FFL rejects short transient input and responds to sustained input.")
     else:
         print("Warning: parameter choice does not clearly separate short vs long response.")
